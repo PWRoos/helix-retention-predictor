@@ -484,12 +484,14 @@ def business_case(perf, mean_salary, outdir):
     print("  " + "-" * 62)
     sens = []
     for lab, rec, eff in [
+        ("Upper 95% CI recall, 40% effectiveness", perf["recall_ci"][1], 0.40),
+        ("Point estimate, 40% effectiveness", perf["recall"], 0.40),
+        ("Upper 95% CI recall, 30% effectiveness", perf["recall_ci"][1], 0.30),
         ("Point estimate, 30% effectiveness", perf["recall"], 0.30),
         ("Lower 95% CI recall, 30% effectiveness", perf["recall_ci"][0], 0.30),
-        ("Upper 95% CI recall, 30% effectiveness", perf["recall_ci"][1], 0.30),
         ("Point estimate, 20% effectiveness", perf["recall"], 0.20),
         ("Lower 95% CI recall, 20% effectiveness", perf["recall_ci"][0], 0.20),
-        ("Point estimate, 40% effectiveness", perf["recall"], 0.40),
+        
     ]:
         tp = rec * perf["n_pos"]
         gross = eff * tp * repl
