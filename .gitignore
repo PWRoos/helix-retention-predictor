@@ -34,3 +34,9 @@ venv.bak/
 # Temporary files
 *.swp
 *~
+
+# Office lock files
+~$*
+
+# Rendered PDF exports
+*.pdf
