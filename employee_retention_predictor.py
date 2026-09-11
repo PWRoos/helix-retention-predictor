@@ -162,7 +162,8 @@ def load_data(path):
 # SECTION 2: FIELD ELIMINATION
 # =============================================================================
 
-def prepare_features(df, exclude_proxy=EXCLUDE_PROXY_FEATURES, verbose=True):
+def prepare_features(df, exclude_proxy=EXCLUDE_PROXY_FEATURES,
+                     exclude_protected=True, verbose=True):
     """Drop non-informative, protected, and (optionally) proxy-risk fields."""
     if verbose:
         print("\n" + "=" * 79)
@@ -185,11 +186,12 @@ def prepare_features(df, exclude_proxy=EXCLUDE_PROXY_FEATURES, verbose=True):
         print(f"    {IDENTIFIER_COL:<22} identifier -> DROP as feature, RETAIN as key")
     to_drop.append(IDENTIFIER_COL)
 
-    for col in PROTECTED_EXCLUDE:
-        if col in df.columns:
-            if verbose:
-                print(f"    {col:<22} PROTECTED ATTRIBUTE -> DROP")
-            to_drop.append(col)
+    if exclude_protected:
+        for col in PROTECTED_EXCLUDE:
+            if col in df.columns:
+                if verbose:
+                    print(f"    {col:<22} PROTECTED ATTRIBUTE -> DROP")
+                to_drop.append(col)
 
     if exclude_proxy:
         for col in PROXY_RISK_COLS:
@@ -367,7 +369,7 @@ def oof_performance(y, res):
 # SECTION 5: FAIRNESS AND PROXY AUDIT
 # =============================================================================
 
-def proxy_audit(y, X_with, nc_w, cc_w, X_without, nc_o, cc_o):
+def proxy_audit(y, X_unrestricted, nc_u, cc_u, X_with, nc_w, cc_w, X_without, nc_o, cc_o):
     """
     Two questions the ethics section must answer with evidence, not assertion.
 
@@ -386,7 +388,8 @@ def proxy_audit(y, X_with, nc_w, cc_w, X_without, nc_o, cc_o):
 
     outer = StratifiedKFold(OUTER_FOLDS, shuffle=True, random_state=RANDOM_STATE)
     scores = {}
-    for lab, Xs, nc, cc in [("With DistanceFromHome", X_with, nc_w, cc_w),
+    for lab, Xs, nc, cc in [("Unrestricted (all features)", X_unrestricted, nc_u, cc_u),
+                            ("With DistanceFromHome", X_with, nc_w, cc_w),
                             ("Without DistanceFromHome", X_without, nc_o, cc_o)]:
         aucs = []
         for tr, te in outer.split(Xs, y):
@@ -397,6 +400,8 @@ def proxy_audit(y, X_with, nc_w, cc_w, X_without, nc_o, cc_o):
         print(f"  {lab:<28} out-of-fold AUC {scores[lab]:.4f}")
 
     delta = scores["With DistanceFromHome"] - scores["Without DistanceFromHome"]
+    total = scores["Unrestricted (all features)"] - scores["Without DistanceFromHome"]
+    print(f"  Total cost of the fairness constraint: {total:+.4f} AUC")
     print(f"\n  Cost of excluding the proxy feature: {delta:+.4f} AUC")
     print("  The dataset holds no race or socioeconomic field, so the proxy")
     print("  relationship motivating the concern CANNOT be tested here. Given an")
@@ -739,6 +744,8 @@ def main():
     X, y, keys, nc, cc = prepare_features(df, exclude_proxy=True)
     # Comparison set retaining the proxy feature
     Xf, _, _, ncf, ccf = prepare_features(df, exclude_proxy=False, verbose=False)
+    # Unrestricted set — measures the total cost of the fairness constraint
+    Xu, _, _, ncu, ccu = prepare_features(df, exclude_proxy=False, exclude_protected=False, verbose=False)
 
     res = nested_cv(X, y, nc, cc, label="Logistic Regression (deployed)")
     rf = nested_cv(X, y, nc, cc,
@@ -754,7 +761,7 @@ def main():
     print(f"    {winner} selected.")
 
     perf = oof_performance(y, res)
-    proxy_audit(y, Xf, ncf, ccf, X, nc, cc)
+    proxy_audit(y, Xu, ncu, ccu, Xf, ncf, ccf, X, nc, cc)
     disparate_impact(df, res["oof_pred"])
 
     scenarios, sens, repl, intv = business_case(perf, mean_salary, args.outdir)

@@ -127,7 +127,7 @@ The competitive structure amplifies the threat. LinkedIn's data indicates that *
 
 Three specific deficiencies follow. First, **no leading indicator exists**. Attrition is measured retrospectively, by quarter, in aggregate. There is no employee-level forward-looking signal, and therefore no basis on which to allocate a retention budget. Second, **the engagement data already collected is not used analytically**. Environment satisfaction, job satisfaction, job involvement, relationship satisfaction, and work-life balance are surveyed and stored, then reviewed as departmental averages that mask the individual-level variation where risk actually resides. Third, **intervention is undifferentiated**. In the absence of targeting, any retention spend must either be applied broadly — which is unaffordable — or allocated on managerial intuition, which is unauditable and exposes the firm to inconsistency risk.
 
-*The quantified gap.* The financial consequence is directly calculable from the client's own record. Departing employees carry a mean monthly income of $4,787, against $6,833 for those who stay — a signal that attrition is concentrated in earlier-career and lower-band roles, though not exclusively so. Annualised, the mean departing salary is $57,444. At a 1.5× replacement multiplier, each departure costs **≈ $86,000**. At 237 departures per year, the annual replacement burden is **approximately $20.4 million**, or roughly 6% of revenue on the one-year assumption.
+*The quantified gap.* The financial consequence is directly calculable from the client's own record. Departing employees carry a mean monthly income of $4,787, against $6,833 for those who stay — a signal that attrition is concentrated in earlier-career and lower-band roles, though not exclusively so. Annualised, the mean departing salary is $57,445. At a 1.5× replacement multiplier, each departure costs **≈ $86,000**. At 237 departures per year, the annual replacement burden is **approximately $20.4 million**, or roughly 6% of revenue on the one-year assumption.
 
 The distribution of that burden is highly uneven, which is precisely what makes it addressable. Attrition among employees working overtime is **30.5%, against 10.4% for those who do not** — a threefold difference on a single operational variable that Helix already records. By role, Sales Representatives depart at 39.8% and Laboratory Technicians at 23.9%, while Research Directors depart at 2.5% and Managers at 4.9%. Risk is not diffuse. It is concentrated, patterned, and — the central premise of this engagement — predictable.
 
@@ -377,7 +377,7 @@ This finding is operationally significant because `OverTime` is among the few hi
 
 ## Principal finding: compensation
 
-![Figure 1. Departure rate by overtime status, and monthly income density by outcome.](output/figures/fig1_overtime_income.png)
+![Figure 1. Departure rate by overtime status, and monthly income density by outcome.](../output/figures/fig1_overtime_income.png)
 
 Departing employees earn a mean monthly income of **$4,787, against $6,833 for those who remain** — a differential of roughly 30%. Density plots show the leaver distribution concentrated sharply in the lower band with a long thin upper tail.
 
@@ -391,7 +391,7 @@ This is an important negative result. **Departure at Helix is not driven by any 
 
 ## Supporting findings
 
-![Figure 2. Departure rate gradients across tenure, manager tenure, stock options and job level. Dashed line marks the 16.1% overall rate.](output/figures/fig2_risk_gradients.png)
+![Figure 2. Departure rate gradients across tenure, manager tenure, stock options and job level. Dashed line marks the 16.1% overall rate.](../output/figures/fig2_risk_gradients.png)
 
 **Tenure and manager relationship.** Departure in the first year of service runs at **34.9%**, falling to 21.3% in year two, 13.8% at years 3–5, 12.3% at 6–10 and 8.1% beyond ten years. Separately, employees with **under one year with their current manager depart at 32.3%**, against 11.0% for those with more than five years. Early tenure and recent managerial change are the two highest-risk states in the data.
 
@@ -504,7 +504,7 @@ The threshold stability figure is worth noting: across five independent inner lo
 
 ## Out-of-fold performance
 
-![Figure 3. ROC curve across all 1,470 out-of-fold predictions, and propensity distributions by actual outcome.](output/figures/fig3_model_performance.png)
+![Figure 3. ROC curve across all 1,470 out-of-fold predictions, and propensity distributions by actual outcome.](../output/figures/fig3_model_performance.png)
 
 Performance is measured on out-of-fold predictions for every employee, at thresholds selected without reference to the fold being evaluated.
 
@@ -536,7 +536,7 @@ The model identifies **roughly two-thirds of employees who subsequently departed
 
 ## Threshold selection
 
-![Figure 4. Recall and precision against decision threshold, with the recall confidence band and net annual value at a one-year window.](output/figures/fig4_threshold_tradeoff.png)
+![Figure 4. Recall and precision against decision threshold, with the recall confidence band and net annual value at a one-year window.](../output/figures/fig4_threshold_tradeoff.png)
 
 The `scikit-learn` default of 0.50 is an arbitrary inheritance, not a business decision. Sweeping the threshold against net annual value at a one-year window:
 
@@ -566,7 +566,7 @@ In the longer term, the deployed model becomes an instrument for testing organis
 
 The ethics framework in this report makes two claims that would be worthless as assertions, so both are tested.
 
-**Claim 1: the protected-attribute exclusions cost little.** Measured across identical out-of-fold evaluation, excluding `DistanceFromHome` costs **0.005 ROC-AUC** (0.818 with, 0.813 without). The three protected attributes and the proxy feature together cost approximately 0.02 AUC relative to an unrestricted model. **This is the price of the fairness constraint, and it is disclosed rather than assumed negligible.** The trade is judged acceptable and the client makes it knowingly.
+**Claim 1: the protected-attribute exclusions cost little.** Measured across identical out-of-fold evaluation, an unrestricted model scores 0.8245 ROC-AUC. Excluding the three protected attributes costs **0.006**; excluding `DistanceFromHome` on proxy-risk grounds costs a further **0.005**, taking the deployed model to 0.8134. **The fairness constraint therefore costs 0.011 ROC-AUC in total.** The trade is judged acceptable and the client makes it knowingly.
 
 **Claim 2: excluding protected attributes prevents disparate impact.** Exclusion does not guarantee neutrality, because correlated features can reconstruct a protected attribute. Applying the four-fifths rule to out-of-fold flag rates by gender:
 
@@ -623,7 +623,7 @@ Two consequences follow, both carried into the recommendations. **Structural rem
 
 ## The observation window: the dominant sensitivity
 
-![Figure 5. Baseline liability and net programme value under each observation-window assumption.](output/figures/fig6_time_anchor.png)
+![Figure 5. Baseline liability and net programme value under each observation-window assumption.](../output/figures/fig6_time_anchor.png)
 
 Because the dataset does not state its observation window, the following is reported across the plausible range rather than at a single point. Benefits scale down with a longer window; scoring costs do not, because the model still evaluates the workforce annually.
 
@@ -667,7 +667,7 @@ Helix spends roughly $1.2m on 205 employees who were not going to leave, and the
 
 | Scenario | Net benefit | ROI |
 |---|---|---|
-| Upper 95% CI recall, 40% effectiveness | ≈ $3.6m | 160% |
+| Upper 95% CI recall, 40% effectiveness | ≈ $3.5m | 157% |
 | Point estimate, 40% effectiveness | ≈ $3.1m | 136% |
 | Upper 95% CI recall, 30% effectiveness | ≈ $2.1m | 93% |
 | **Point estimate, 30% effectiveness (base case)** | **≈ $1.7m** | **77%** |
@@ -910,7 +910,7 @@ Source: IBM HR Analytics Employee Attrition & Performance. 1,470 records × 35 v
 
 ## Appendix E — Model coefficients
 
-![Figure 6. Strongest drivers in the deployed model, standardised log-odds coefficients.](output/figures/fig5_coefficients.png)
+![Figure 6. Strongest drivers in the deployed model, standardised log-odds coefficients.](../output/figures/fig5_coefficients.png)
 
 **Strongest risk factors:** `OverTime_Yes` (+1.687, odds ratio 5.40), `BusinessTravel_Travel_Frequently` (+1.401, OR 4.06), `JobRole_Laboratory Technician` (+1.225, OR 3.40), `JobRole_Sales Representative` (+1.224, OR 3.40), `BusinessTravel_Travel_Rarely` (+0.742), `YearsAtCompany` (+0.679), `JobRole_Human Resources` (+0.644).
 
